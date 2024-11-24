@@ -23,7 +23,7 @@ runs:
 
     - name: Install LaTeX Dependencies
       if: steps.cache-paper-pdf.outputs.cache-hit != 'true'
-      uses: install_latex_dependencies
+      uses: devinatkin/latex-action/install_latex_dependencies@main
       
     - name: Compile LaTeX Document (Initial Compilation)
       if: steps.cache-paper-pdf.outputs.cache-hit != 'true'
