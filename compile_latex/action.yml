@@ -21,6 +21,10 @@ runs:
         path: ${{ inputs.directory }}
         key: ${{ runner.os }}-presentations-${{ inputs.directory }}-${{ inputs.tex-file }}-${{ hashFiles(format('{0}/**/*.tex', inputs.directory)) }}
 
+    - name: Install LaTeX Dependencies
+      if: steps.cache-paper-pdf.outputs.cache-hit != 'true'
+      uses: install_latex_dependencies
+      
     - name: Compile LaTeX Document (Initial Compilation)
       if: steps.cache-paper-pdf.outputs.cache-hit != 'true'
       run: |
