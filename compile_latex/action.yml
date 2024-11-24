@@ -15,13 +15,14 @@ runs:
   using: "composite"
   steps:
     - name: Cache Presentations PDFs
-      id: cache-presentations-pdf
+      id: cache-paper-pdf
       uses: actions/cache@v4
       with:
         path: ${{ inputs.directory }}
         key: ${{ runner.os }}-presentations-${{ inputs.directory }}-${{ inputs.tex-file }}-${{ hashFiles(format('{0}/**/*.tex', inputs.directory)) }}
 
     - name: Compile LaTeX Document (Initial Compilation)
+      if: steps.cache-paper-pdf.outputs.cache-hit != 'true'
       run: |
         cd ${{ inputs.directory }}
         pdflatex -interaction=nonstopmode ${{ inputs.tex-file }}.tex || true
@@ -30,6 +31,7 @@ runs:
       shell: bash
 
     - name: Compile LaTeX Document (Final Compilation)
+      if: steps.cache-paper-pdf.outputs.cache-hit != 'true'
       run: |
         cd ${{ inputs.directory }}
         pdflatex -interaction=nonstopmode ${{ inputs.tex-file }}.tex || true
