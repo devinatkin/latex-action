@@ -8,5 +8,8 @@ runs:
         sudo apt update
         sudo apt install -y texlive-latex-base texlive-fonts-recommended texlive-fonts-extra texlive-latex-extra
         sudo apt install -y texlive-bibtex-extra biber
-        sudo apt install texlive-pictures
+      shell: bash
+
+    - name: Install TikZ dependencies
+      run: sudo apt-get update && sudo apt-get install -y texlive-pictures
       shell: bash
