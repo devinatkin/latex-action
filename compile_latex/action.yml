@@ -19,7 +19,7 @@ runs:
       uses: actions/cache@v4
       with:
         path: ${{ inputs.directory }}
-        key: ${{ runner.os }}-presentations-${{ inputs.directory }}-${{ inputs.tex-file }}-${{ hashFiles(format('{0}/**/*.tex', inputs.directory)) }}
+        key: ${{ runner.os }}-latexdocs-${{ inputs.directory }}-${{ inputs.tex-file }}-${{ hashFiles(format('{0}/**/*.tex', inputs.directory)) }}
 
     - name: Install LaTeX Dependencies
       if: steps.cache-paper-pdf.outputs.cache-hit != 'true'
