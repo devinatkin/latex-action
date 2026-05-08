@@ -1,50 +1,46 @@
 name: Compile LaTeX Document
 description: Compiles a LaTeX document and checks if the PDF was successfully created.
+
 inputs:
   tex-file:
-    description: 'Path to the LaTeX file to compile'
+    description: 'LaTeX filename without the .tex extension'
     required: true
-    default: 'document.tex'
-  directory: 
-    description: 'Path to compile the Latex file from'
+    default: 'document'
+  directory:
+    description: 'Path to compile the LaTeX file from'
     required: false
     default: '.'
-
 
 runs:
   using: "composite"
   steps:
-    - name: Cache Presentations PDFs
-      id: cache-paper-pdf
+    - name: Cache TeX Live
+      id: cache-texlive
       uses: actions/cache@v5
       with:
-        path: ${{ inputs.directory }}
-        key: ${{ runner.os }}-latexdocs-${{ inputs.directory }}-${{ inputs.tex-file }}-${{ hashFiles(format('{0}/**/*.tex', inputs.directory)) }}
+        path: |
+          /usr/local/texlive
+          ~/.texlive*
+        key: ${{ runner.os }}-texlive-v2
 
     - name: Install LaTeX Dependencies
-      if: steps.cache-paper-pdf.outputs.cache-hit != 'true'
+      if: steps.cache-texlive.outputs.cache-hit != 'true'
       uses: devinatkin/latex-action/install_latex_dependencies@main
-      
-    - name: Compile LaTeX Document (Initial Compilation)
-      if: steps.cache-paper-pdf.outputs.cache-hit != 'true'
-      run: |
-        cd ${{ inputs.directory }}
-        pdflatex -interaction=nonstopmode ${{ inputs.tex-file }}.tex || true
-        biber ${{ inputs.tex-file }} || true
-        pdflatex -interaction=nonstopmode ${{ inputs.tex-file }}.tex || true
-      shell: bash
 
-    - name: Compile LaTeX Document (Final Compilation)
-      if: steps.cache-paper-pdf.outputs.cache-hit != 'true'
+    - name: Compile LaTeX Document
       run: |
-        cd ${{ inputs.directory }}
-        pdflatex -interaction=nonstopmode ${{ inputs.tex-file }}.tex || true
+        cd "${{ inputs.directory }}"
+        latexmk -pdf \
+          -interaction=nonstopmode \
+          -halt-on-error \
+          "${{ inputs.tex-file }}.tex"
       shell: bash
 
     - name: Check if PDF was created
       run: |
-        cd ${{ inputs.directory }}
-        pdf_file=$(basename "${{ inputs.tex-file }}").pdf
+        cd "${{ inputs.directory }}"
+        pdf_file="$(basename "${{ inputs.tex-file }}").pdf"
+
         if [ ! -f "$pdf_file" ]; then
           echo "PDF file was not created"
           exit 1
