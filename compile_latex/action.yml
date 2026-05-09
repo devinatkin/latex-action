@@ -25,7 +25,7 @@ runs:
 
     - name: Install LaTeX Dependencies
       if: steps.cache-texlive.outputs.cache-hit != 'true'
-      uses: devinatkin/latex-action/install_latex_dependencies@main
+      uses: devinatkin/latex-action/install_latex_dependencies@caching-changes
 
     - name: Compile LaTeX Document
       run: |
